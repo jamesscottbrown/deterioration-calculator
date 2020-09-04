@@ -325,19 +325,29 @@ export default class App extends Component {
         <p>
           The 4C Mortality Score is a risk stratification score that predicts
           in-hospital mortality for hospitalised COVID-19 patients, produced by
-          the <a href="https://isaric4c.net/">ISARIC 4C consortium</a>.
+          the <a href="https://isaric4c.net/">ISARIC 4C consortium</a>.{" "}
+          <b>It is intended for use by clinicians.</b>
         </p>
-        <p>It is intended for use by clinicians.</p>
+
         <p>
           It is designed to be easy-to-use, and require only parameters that are
           commonly available at hospital presentation.
         </p>
+
         <p>
           For full details, see{" "}
           <a href="https://www.medrxiv.org/content/10.1101/2020.07.30.20165464v1#disqus_thread">
+            {" "}
             the paper
-          </a>
-          .
+          </a>{" "}
+          introducing the score.
+        </p>
+        <p></p>
+
+        <p>
+          This is an infographic that visualises risk, based on observed
+          mortality among hospitalised adult COVID19 patients recruited into the
+          ISARIC 4C study in the UK.
         </p>
 
         {scores_array.map((f, i) => {
@@ -385,11 +395,6 @@ export default class App extends Component {
               (higher is worse)
             </p>
             <CombinedRiskPlot score={score} />
-            <p>
-              Mortality estimates include only in-hospital mortality, and are
-              based on observed mortality among hospitalised COVID19 patients
-              recruited into the ISARIC 4C study.
-            </p>
           </>
         ) : (
           <p>
