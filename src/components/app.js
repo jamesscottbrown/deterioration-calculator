@@ -138,6 +138,10 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
 
       <g transform={`translate(${marginLeft},0)`}>
         <path d={l} stroke="lightgrey" fill="none" />
+        {allScores.map((s) => (
+          <circle cx={x(s)} cy={y(mortality[s])} r={2} fill="lightgrey" />
+        ))}
+
         <circle cx={x(score)} cy={y(mortality[score])} r={4} fill="black" />
         <line
           x1={x(0)}
