@@ -212,7 +212,7 @@ const CombinedRiskPlot = ({ score }) => {
 
   return (
     <div style={{ "max-width": "100%" }}>
-      <svg viewBox={`0 0 500 ${svgHeight}`}>
+      <svg viewBox={`0 0 510 ${svgHeight}`}>
         <g transform={"translate(0,50)"}>
           <Risk
             score={score}
