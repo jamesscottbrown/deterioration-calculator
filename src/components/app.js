@@ -120,51 +120,6 @@ const RiskStripChart = ({ score, rectHeight, marginLeft }) => {
   );
 };
 
-const RiskBar = ({ score, maxBarHeight, marginLeft }) => {
-  const maxCount = Math.max.apply(Math, mortality);
-  const y = scaleLinear().range([maxBarHeight, 0]).domain([0, maxCount]);
-
-  const x = (i) => 20 * i;
-  const barWidth = 8;
-
-  return (
-    <g>
-      <g transform={`translate(${marginLeft},0)`}>
-        <YAxis y={y} />
-      </g>
-
-      <g transform={`translate(${marginLeft},0)`}>
-        {mortality.map((n, i) => (
-          <rect
-            x={x(i) - barWidth / 2}
-            width={barWidth}
-            y={y(n)}
-            height={maxBarHeight - y(n)}
-            fill={scoreColors[i]}
-            opacity={i === score ? 1.0 : 0.4}
-          />
-        ))}
-
-        <text text-anchor="start" transform={`translate(${15}, 0)rotate(90)`}>
-          In-hospital mortality/%
-        </text>
-      </g>
-    </g>
-  );
-};
-
-/*
-    const l = line()(survival.map((d, i) => [x(i), y(d)]));
-
-    return <svg width="500" height="500">
-        <g transform="translate(40,0)"><YAxis y={y}/></g>
-
-        <g transform="translate(40,0)">
-            <path d={l} stroke="red" fill="none"/>
-            <line x1={x(score)} x2={x(score)} y1={y(0)} y2={y(100)} stroke="black"/>
-        </g>
-
-*/
 const Risk = ({ score, maxBarHeight, marginLeft }) => {
   const maxCount = Math.max.apply(Math, mortality);
   const y = scaleLinear().range([maxBarHeight, 0]).domain([0, maxCount]);
