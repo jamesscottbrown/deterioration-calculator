@@ -6,7 +6,7 @@ import { line, curveCatmullRom } from "d3-shape";
 const score_table = {
   age: {
     scores: {
-      "<50": 0,
+      "18-49": 0,
       "50-59": 2,
       "60-69": 4,
       "70-79": 6,
@@ -163,6 +163,7 @@ const RiskStripChart = ({ score, rectHeight, marginLeft }) => {
             x={(x(c.min) + x(c.max)) / 2}
             y={rectHeight + 60}
             text-anchor="middle"
+            font-weight={score >= c.min && score <= c.max ? "bold" : "normal"}
           >
             {c.name}
           </text>
@@ -205,13 +206,7 @@ const RiskStripChart = ({ score, rectHeight, marginLeft }) => {
         {/* Vertical line for each value */}
         {allScores.map((s) => {
           return (
-            <line
-              x1={x(s)}
-              x2={x(s)}
-              y1={0}
-              y2={rectHeight}
-              stroke="lightgrey"
-            />
+            <line x1={x(s)} x2={x(s)} y1={0} y2={rectHeight} stroke="grey" />
           );
         })}
 
@@ -274,7 +269,7 @@ const RiskBar = ({ score, maxBarHeight, marginLeft }) => {
             width={barWidth}
             y={y(n)}
             height={maxBarHeight - y(n)}
-            fill={i === score ? "black" : scoreColors[i]}
+            fill={scoreColors[i]}
             opacity={i === score ? 1.0 : 0.4}
           />
         ))}
@@ -316,7 +311,7 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
       </g>
 
       <g transform={`translate(${marginLeft},0)`}>
-        <path d={l} stroke="red" fill="none" />
+        <path d={l} stroke="lightgrey" fill="none" />
         <circle cx={x(score)} cy={y(mortality[score])} r={4} fill="black" />
         <line
           x1={x(0)}
@@ -329,7 +324,7 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
         <line
           x1={x(score)}
           x2={x(score)}
-          y1={y(0)}
+          y1={y(0) + maxBarHeight + 60}
           y2={y(mortality[score])}
           stroke="black"
           stroke-dasharray="2,2"
@@ -362,7 +357,7 @@ const FrequencyPlot = ({ score, maxBarHeight, marginLeft }) => {
             width={barWidth}
             y={y(n)}
             height={maxBarHeight - y(n)}
-            fill={i === score ? "black" : scoreColors[i]}
+            fill={"grey"}
             opacity={i === score ? 1.0 : 0.4}
           />
         ))}
@@ -506,6 +501,7 @@ export default class App extends Component {
           in-hospital mortality for hospitalised COVID-19 patients, produced by
           the <a href="https://isaric4c.net/">ISARIC 4C consortium</a>.
         </p>
+        <p>It is intended for use by clinicians.</p>
         <p>
           It is designed to be easy-to-use, and require only parameters that are
           commonly available at hospital presentation.
@@ -548,7 +544,10 @@ export default class App extends Component {
 
         {score !== null ? (
           <>
-            <p class="centered">
+            <p
+              class="centered"
+              style={{ border: `solid 4px ${scoreColors[score]}` }}
+            >
               <span
                 style={{
                   fontSize: "4em",
