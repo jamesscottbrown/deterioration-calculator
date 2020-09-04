@@ -1,3 +1,4 @@
+/* Table 2 of paper */
 const score_table = {
   age: {
     scores: {
@@ -69,6 +70,7 @@ const score_table = {
   },
 };
 
+/* Model Validation (p. 19/61) */
 const categories = [
   { name: "Low", min: 0, max: 3, color: "#fee5d9", mortality: "1.2%" },
   { name: "Intermediate", min: 4, max: 8, color: "#fcae91", mortality: "9.9%" },
@@ -76,6 +78,7 @@ const categories = [
   { name: "Very High", min: 15, max: 21, color: "#cb181d", mortality: "61.5%" },
 ];
 
+/* Extracted from bars in Fig 2A */
 const counts = [
   160.3375527426158,
   329.11392405063265,
@@ -101,6 +104,7 @@ const counts = [
   33.755274261603375,
 ];
 
+/* Sent by Ewen over Slack */
 const mortality = [
   0,
   0.2976190476190476,
