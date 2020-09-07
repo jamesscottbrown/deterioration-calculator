@@ -372,6 +372,8 @@ export default class App extends Component {
 
         {scores_array.map((f, i) => {
           const short_name = short_names[i];
+          const values = f.order ? f.order : Object.keys(f.scores);
+
           return (
             <>
               <label for={short_name}>
@@ -379,7 +381,7 @@ export default class App extends Component {
               </label>
 
               <div id={short_name} role="group" class="btn-group">
-                {Object.keys(f.scores).map((value) => (
+                {values.map((value) => (
                   <button
                     class={
                       selection[short_name] === value

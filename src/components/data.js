@@ -50,6 +50,7 @@ const score_table = {
       "<15": 2,
       "15": 0,
     },
+    order: ["<15", "15"],
     name: "Glasgow Coma Scale",
   },
   urea: {
