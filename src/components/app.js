@@ -324,6 +324,8 @@ export default class App extends Component {
 
     return (
       <div id="app">
+        <base target="_parent" />
+
         <h1>4C Mortality Score</h1>
 
         <p>
