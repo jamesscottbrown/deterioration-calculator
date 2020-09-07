@@ -130,6 +130,8 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
     mortality.map((d, i) => [x(i), y(d)])
   );
 
+  const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
+
   return (
     <g>
       <g transform={`translate(${marginLeft},0)`}>
@@ -143,6 +145,8 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
         ))}
 
         <circle cx={x(score)} cy={y(mortality[score])} r={4} fill="black" />
+
+        {/* Horizontal line */}
         <line
           x1={x(0)}
           x2={x(score)}
@@ -151,6 +155,8 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
           stroke="black"
           stroke-dasharray="2,2"
         />
+
+        {/* Vertical line */}
         <line
           x1={x(score)}
           x2={x(score)}
@@ -159,6 +165,14 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
           stroke="black"
           stroke-dasharray="2,2"
         />
+
+        <text
+          x={x(score) / 2}
+          y={y(mortality[score]) - 5}
+          text-anchor={"middle"}
+        >
+          {score > 0 && round(mortality[score])}%
+        </text>
 
         <text text-anchor="start" transform={`translate(${15}, 0)rotate(90)`}>
           In-hospital mortality/%
