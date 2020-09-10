@@ -60,6 +60,12 @@ const score_table = {
       ">14": 3,
     },
     name: "Urea (mmol/L)",
+    altScores: {
+      "⩽19.6": 0,
+      "19.6-39.2": 1,
+      ">39.2": 3,
+    },
+    altName: "BUN (mg/dL)",
   },
   crp: {
     scores: {
@@ -67,7 +73,13 @@ const score_table = {
       "50-99": 1,
       "⩾100": 2,
     },
-    name: "CRP (mg/dl)",
+    name: "CRP (mg/dL)",
+    altScores: {
+      "<500": 0,
+      "500-990": 1,
+      "⩾1000": 2,
+    },
+    altName: "CRP (mg/L)",
   },
 };
 
