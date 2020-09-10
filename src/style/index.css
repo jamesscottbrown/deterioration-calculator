@@ -56,7 +56,7 @@ html, body {
    /* color: #069; */
     text-decoration: underline;
     cursor: pointer;
-    float: right;
+    /* float: right; */
 }
 
 /* Button CSS from Bootstrap */

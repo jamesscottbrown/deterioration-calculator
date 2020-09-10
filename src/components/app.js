@@ -130,8 +130,7 @@ const Measurement = ({ short_name, f, selection, handleSelection }) => {
   return (
     <>
       <label for={short_name}>
-        {name}:<SwitchButton />
-        {details(help)}
+        {name}:{details(help)}
       </label>
 
       <div id={short_name} role="group" class="btn-group">
@@ -148,6 +147,8 @@ const Measurement = ({ short_name, f, selection, handleSelection }) => {
           </button>
         ))}
       </div>
+
+      <SwitchButton />
     </>
   );
 };
@@ -180,8 +181,7 @@ export default class App extends Component {
 
         <div
           style={{
-            width: "max-content",
-            "max-width": "100%",
+            "max-width": "max-content",
             margin: "auto auto 2em 0",
           }}
         >
