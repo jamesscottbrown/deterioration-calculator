@@ -356,11 +356,8 @@ export default class App extends Component {
 
         <p>
           For full details, see{" "}
-          <a href="https://www.medrxiv.org/content/10.1101/2020.07.30.20165464v1#disqus_thread">
-            {" "}
-            the paper
-          </a>{" "}
-          introducing the score.
+          <a href="https://doi.org/10.1136/bmj.m3339"> the paper</a> introducing
+          the score.
         </p>
         <p></p>
 
