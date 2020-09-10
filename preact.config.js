@@ -1,5 +1,7 @@
 // See https://stackoverflow.com/questions/45742982/set-base-url-for-preact-cli
 
+// You may need to comment out this block during development
+/*
 export default (config, env, helpers) => {
   config.output.publicPath = "/risk/4c/";
 
@@ -12,3 +14,4 @@ export default (config, env, helpers) => {
     })
   );
 };
+  */
