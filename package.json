@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "prognostic-calculator",
-  "homepage": "/risk/4c/",
+  "name": "4C-mortality-score",
+  "homepage": "https://www.isaric4c.net/risk/4c",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
