@@ -161,7 +161,7 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
           y={y(mortality[score]) - 5}
           text-anchor={"middle"}
         >
-          {score > 0 && round(mortality[score])}%
+          {score > 0 && <>{round(mortality[score])}%</>}
         </text>
 
         <text text-anchor="start" transform={`translate(${15}, 0)rotate(90)`}>
