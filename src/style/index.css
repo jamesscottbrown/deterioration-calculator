@@ -43,7 +43,20 @@ html, body {
     margin-top: 15px;
     border-radius: 10px;
     background: rgba(220, 220, 220, 0.1);
+}
 
+/* See https://stackoverflow.com/a/1368286 */
+.units-button {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+   /* color: #069; */
+    text-decoration: underline;
+    cursor: pointer;
+    float: right;
 }
 
 /* Button CSS from Bootstrap */

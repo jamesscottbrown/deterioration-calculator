@@ -96,14 +96,9 @@ const WhatYouShouldDo = () => (
   </div>
 );
 
-const Measurement = ({
-  values,
-  short_name,
-  selection,
-  name,
-  help,
-  handleSelection,
-}) => {
+const Measurement = ({ short_name, f, selection, handleSelection }) => {
+  const [usingAltUnits, setUsingAltUnits] = useState(false);
+
   const details = (help) =>
     help && (
       <details>
@@ -112,10 +107,31 @@ const Measurement = ({
       </details>
     );
 
+  const SwitchButton = () => {
+    if (!f.altName) {
+      return null;
+    }
+
+    return (
+      <button
+        onClick={() => setUsingAltUnits(!usingAltUnits)}
+        class="units-button"
+      >
+        Use {usingAltUnits ? f.name : f.altName}
+      </button>
+    );
+  };
+
+  const scores = usingAltUnits ? f.altScores : f.scores;
+  const values = f.order ? f.order : Object.keys(scores);
+  const name = usingAltUnits ? f.altName : f.name;
+  const help = f.help;
+
   return (
     <>
       <label for={short_name}>
-        {name}: {details(help)}
+        {name}:<SwitchButton />
+        {details(help)}
       </label>
 
       <div id={short_name} role="group" class="btn-group">
@@ -126,7 +142,7 @@ const Measurement = ({
                 ? "btn btn-secondary"
                 : "btn btn-outline-secondary"
             }
-            onclick={() => handleSelection(value)}
+            onclick={() => handleSelection(value, scores[value])}
           >
             {value}
           </button>
@@ -142,7 +158,6 @@ export default class App extends Component {
       selection: {},
       scoreContribution: {},
     });
-    //const [scoreContribution, setScoreContribution] = useState({});
 
     const short_names = Object.keys(score_table);
     const scores_array = short_names.map((f) => score_table[f]);
@@ -153,8 +168,6 @@ export default class App extends Component {
       console.log("Score not set");
     } else {
       score = Object.values(state.scoreContribution).reduce((a, b) => a + b, 0);
-
-      //   score += score_table[short_name]["scores"][selectedValue];
     }
 
     return (
@@ -174,67 +187,27 @@ export default class App extends Component {
         >
           {scores_array.map((f, i) => {
             const short_name = short_names[i];
-            const values = f.order ? f.order : Object.keys(f.scores);
 
-            const handleSelection = (s) => (newValue) => {
+            const handleSelection = (newValue, scoreContribution) => {
               setState({
                 selection: { ...state.selection, [short_name]: newValue },
                 scoreContribution: {
                   ...state.scoreContribution,
-                  [short_name]: s[newValue],
+                  [short_name]: scoreContribution,
                 },
               });
             };
 
-            if (f.altName) {
-              return (
-                <div class="measurement">
-                  <Measurement
-                    values={values}
-                    short_name={short_name}
-                    selection={state.selection}
-                    handleSelection={handleSelection(
-                      score_table[short_name]["scores"]
-                    )}
-                    name={f.name}
-                    help={f.help}
-                  />
-
-                  {f.altName && (
-                    <>
-                      <p style={{ width: "max-content", margin: "auto" }}>
-                        <b>or</b>
-                      </p>
-                      <Measurement
-                        values={Object.keys(f.altScores)}
-                        short_name={short_name}
-                        selection={state.selection}
-                        handleSelection={handleSelection(
-                          score_table[short_name]["altScores"]
-                        )}
-                        name={f.altName}
-                        help={null}
-                      />
-                    </>
-                  )}
-                </div>
-              );
-            } else {
-              return (
-                <div class="measurement">
-                  <Measurement
-                    values={values}
-                    short_name={short_name}
-                    selection={state.selection}
-                    handleSelection={handleSelection(
-                      score_table[short_name]["scores"]
-                    )}
-                    name={f.name}
-                    help={f.help}
-                  />
-                </div>
-              );
-            }
+            return (
+              <div class="measurement">
+                <Measurement
+                  f={f}
+                  short_name={short_name}
+                  selection={state.selection}
+                  handleSelection={handleSelection}
+                />
+              </div>
+            );
           })}
         </div>
 
