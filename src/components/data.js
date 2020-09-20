@@ -73,13 +73,13 @@ const score_table = {
       "50-99": 1,
       "⩾100": 2,
     },
-    name: "CRP (mg/dL)",
+    name: "CRP (mg/L)",
     altScores: {
-      "<500": 0,
-      "500-990": 1,
-      "⩾1000": 2,
+      "<5": 0,
+      "5-9.9": 1,
+      "⩾10": 2,
     },
-    altName: "CRP (mg/L)",
+    altName: "CRP (mg/dL)",
   },
 };
 
