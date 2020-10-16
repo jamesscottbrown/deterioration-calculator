@@ -2,23 +2,54 @@ import { Component } from "preact";
 import { useState } from "preact/hooks";
 import CombinedRiskPlot from "./CombinedRiskPlot";
 
-import { score_table, scoreColors } from "./data";
+import {
+  score_table,
+  deterioration_score_table,
+  scoreColors,
+  mortality,
+} from "./data";
+import BothScoresPlot from "./BothScoresPlot";
 
-const Results = ({ score }) => {
+const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
+
+const Results = ({ score, morbidityScore }) => {
   return score !== null ? (
     <>
-      <p class="centered" style={{ border: `solid 4px ${scoreColors[score]}` }}>
+      <div
+        class="centered"
+        style={{
+          border: `solid 4px ${scoreColors[score]}`,
+          "font-size": "1.5em",
+        }}
+      >
+        Mortality score:
         <span
           style={{
-            fontSize: "4em",
+            fontSize: "1.5em",
           }}
         >
-          <b>{score}</b>/21
+          <b> {score}</b>/21
         </span>{" "}
         <br />
-        (higher is worse)
-      </p>
-      <CombinedRiskPlot score={score} />
+        Risk of death:
+        <span
+          style={{
+            fontSize: "1.5em",
+          }}
+        >
+          <b> {round(mortality[score])}%</b>
+        </span>{" "}
+        <br />
+        Risk of deterioration:
+        <span
+          style={{
+            fontSize: "1.5em",
+          }}
+        >
+          <b> {round(100 * morbidityScore)}%</b>
+        </span>{" "}
+        <br />
+      </div>
     </>
   ) : (
     <p>
@@ -96,7 +127,74 @@ const WhatYouShouldDo = () => (
   </div>
 );
 
-const Measurement = ({ short_name, f, selection, handleSelection }) => {
+const NumberMeasurement = ({ short_name, f, selection, handleSelection }) => {
+  const details = (help) =>
+    help && (
+      <details>
+        <summary>Definition</summary>
+        {help}
+      </details>
+    );
+
+  const name = f.name;
+  const help = f.help;
+
+  const spline = f.morbidity.spline;
+  const sum = (x) => x.reduce((a, b) => a + b, 0);
+
+  const morbidityScore = (v) =>
+    spline.a +
+    spline.b * v +
+    sum(spline.points.map((p) => p[0] * Math.max(v - p[1], 0) ** 3));
+
+  const mortalityScore = (v) => {
+    if (f.mortality === null) {
+      return 0;
+    }
+
+    let i = -1;
+    while (i < f.mortality.thresholds.length - 1) {
+      if (v >= f.mortality.thresholds[i + 1][0]) {
+        i += 1;
+      } else {
+        break;
+      }
+    }
+
+    if (i == -1) {
+      return 0;
+    }
+    console.log(v, f.mortality.thresholds[i][1]);
+    return f.mortality.thresholds[i][1];
+  };
+
+  // TODO: corectly handle mortality score contribution
+
+  return (
+    <>
+      <label for={short_name}>
+        {name}:{details(help)}
+      </label>
+
+      <input
+        class="form-control"
+        type="number"
+        step={f.step}
+        id={short_name}
+        style={{ "padding-bottom": "10px" }}
+        onchange={(ev) =>
+          handleSelection(
+            +ev.target.value,
+            morbidityScore(+ev.target.value),
+            mortalityScore(+ev.target.value)
+          )
+        }
+      />
+    </>
+  );
+};
+
+const DiscreteMeasurement = ({ short_name, f, selection, handleSelection }) => {
   const [usingAltUnits, setUsingAltUnits] = useState(false);
 
   const details = (help) =>
@@ -122,8 +220,12 @@ const Measurement = ({ short_name, f, selection, handleSelection }) => {
     );
   };
 
-  const scores = usingAltUnits ? f.altScores : f.scores;
-  const values = f.order ? f.order : Object.keys(scores);
+  const morbidityScores =
+    f.morbidity && (usingAltUnits ? f.morbidity.altScores : f.morbidity.scores);
+  const mortalityScores =
+    f.mortality && (usingAltUnits ? f.mortality.altScores : f.mortality.scores);
+
+  const values = f.options;
   const name = usingAltUnits ? f.altName : f.name;
   const help = f.help;
 
@@ -141,7 +243,13 @@ const Measurement = ({ short_name, f, selection, handleSelection }) => {
                 ? "btn btn-secondary"
                 : "btn btn-outline-secondary"
             }
-            onclick={() => handleSelection(value, scores[value])}
+            onclick={() =>
+              handleSelection(
+                value,
+                morbidityScores ? morbidityScores[value] : 0,
+                mortalityScores ? mortalityScores[value] : 0
+              )
+            }
           >
             {value}
           </button>
@@ -157,18 +265,37 @@ export default class App extends Component {
   render() {
     const [state, setState] = useState({
       selection: {},
-      scoreContribution: {},
+      morbidityScoreContribution: {},
+      mortalityScoreContribution: {},
     });
 
-    const short_names = Object.keys(score_table);
-    const scores_array = short_names.map((f) => score_table[f]);
+    const short_names = Object.keys(deterioration_score_table);
+    const scores_array = short_names.map((f) => deterioration_score_table[f]);
 
-    let score = 0;
+    let morbidityScore = 0,
+      mortalityScore = 0;
+
+    console.log(Object.keys(state.selection).length, scores_array.length);
+
     if (Object.keys(state.selection).length < scores_array.length) {
-      score = null;
+      morbidityScore = null;
+      mortalityScore = null;
       console.log("Score not set");
     } else {
-      score = Object.values(state.scoreContribution).reduce((a, b) => a + b, 0);
+      mortalityScore = Object.values(state.mortalityScoreContribution).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      const total = Object.values(state.morbidityScoreContribution).reduce(
+        (a, b) => a + b,
+        0
+      );
+      morbidityScore = 1 / (1 + Math.exp(-total));
+
+      console.log(JSON.stringify(state));
+      console.log("Mortality:", mortalityScore);
+      console.log("Morbidity:", morbidityScore);
     }
 
     return (
@@ -188,30 +315,58 @@ export default class App extends Component {
           {scores_array.map((f, i) => {
             const short_name = short_names[i];
 
-            const handleSelection = (newValue, scoreContribution) => {
+            const handleSelection = (
+              newValue,
+              morbidityScoreContribution,
+              mortalityScoreContribution
+            ) => {
+              console.log(
+                short_name,
+                newValue,
+                morbidityScoreContribution,
+                mortalityScoreContribution
+              );
               setState({
                 selection: { ...state.selection, [short_name]: newValue },
-                scoreContribution: {
-                  ...state.scoreContribution,
-                  [short_name]: scoreContribution,
+                morbidityScoreContribution: {
+                  ...state.morbidityScoreContribution,
+                  [short_name]: morbidityScoreContribution,
+                },
+                mortalityScoreContribution: {
+                  ...state.mortalityScoreContribution,
+                  [short_name]: mortalityScoreContribution,
                 },
               });
             };
 
             return (
               <div class="measurement">
-                <Measurement
-                  f={f}
-                  short_name={short_name}
-                  selection={state.selection}
-                  handleSelection={handleSelection}
-                />
+                {f.type === "boolean" ? (
+                  <DiscreteMeasurement
+                    f={f}
+                    short_name={short_name}
+                    selection={state.selection}
+                    handleSelection={handleSelection}
+                  />
+                ) : (
+                  <NumberMeasurement
+                    f={f}
+                    short_name={short_name}
+                    selection={state.selection}
+                    handleSelection={handleSelection}
+                  />
+                )}
               </div>
             );
           })}
         </div>
 
-        <Results score={score} />
+        <Results score={mortalityScore} morbidityScore={morbidityScore} />
+        <br />
+        <BothScoresPlot
+          mortalityScore={mortalityScore}
+          morbidityScore={morbidityScore}
+        />
         <br />
         <WhatYouShouldDo />
       </div>
