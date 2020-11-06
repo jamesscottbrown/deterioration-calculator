@@ -171,10 +171,6 @@ const Header = () => {
 };
 
 const DensitySubPlots = ({ morbidityScore, mortalityScore }) => {
-  mortalityScore = mortalityScore ? mortalityScore : 10; // debugging
-
-  morbidityScore = morbidityScore ? morbidityScore : 0.95; // debugging
-
   const x = scaleLinear().domain([0, 100]).range([0, densityPlotWidth]);
 
   return (
@@ -245,8 +241,6 @@ const DensitySubPlots = ({ morbidityScore, mortalityScore }) => {
  */
 
 const MortalitySubPlot = ({ mortalityScore }) => {
-  mortalityScore = mortalityScore ? mortalityScore : 1; // debugging
-
   const x = scaleLinear().domain([0, 100]).range([0, mortalitySubPlotWidth]);
 
   const l = line().curve(curveCatmullRom.alpha(0.5))(

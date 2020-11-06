@@ -20,6 +20,7 @@ const Results = ({ score, morbidityScore }) => {
         style={{
           border: `solid 4px ${scoreColors[score]}`,
           "font-size": "1.5em",
+          "margin-bottom": "15px",
         }}
       >
         Mortality score:
@@ -50,6 +51,8 @@ const Results = ({ score, morbidityScore }) => {
         </span>{" "}
         <br />
       </div>
+
+      <BothScoresPlot mortalityScore={score} morbidityScore={morbidityScore} />
     </>
   ) : (
     <p>
@@ -368,11 +371,6 @@ export default class App extends Component {
         </div>
 
         <Results score={mortalityScore} morbidityScore={morbidityScore} />
-        <br />
-        <BothScoresPlot
-          mortalityScore={mortalityScore}
-          morbidityScore={morbidityScore}
-        />
         <br />
         {/* <WhatYouShouldDo /> */}
       </div>
