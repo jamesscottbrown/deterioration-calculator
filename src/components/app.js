@@ -311,7 +311,7 @@ export default class App extends Component {
       <div id="app">
         <base target="_parent" />
 
-        <h1>4C Mortality Score</h1>
+        <h1>4C Mortality & 4C Deterioration</h1>
 
         <Intro />
 
