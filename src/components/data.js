@@ -122,7 +122,7 @@ const deterioration_score_table = {
   respiratory_rate: {
     type: "number",
     step: 1,
-    name: "Respiratory Rate",
+    name: "Respiratory Rate (breaths/min)",
     morbidity: {
       spline: {
         a: 0,
@@ -146,7 +146,7 @@ const deterioration_score_table = {
   oxygen_saturation: {
     type: "number",
     step: 1,
-    name: "Admission oxygen saturation",
+    name: "Admission oxygen saturation (%)",
     morbidity: {
       spline: {
         a: 0,
@@ -170,7 +170,7 @@ const deterioration_score_table = {
   urea: {
     type: "number",
     step: 0.001,
-    name: "Urea",
+    name: "Urea (mmol/L)",
     morbidity: {
       spline: {
         a: 0,
@@ -194,7 +194,7 @@ const deterioration_score_table = {
   crp: {
     type: "number",
     step: 0.001,
-    name: "CRP",
+    name: "CRP (mg/L)",
     morbidity: {
       spline: {
         a: 0,
@@ -218,7 +218,7 @@ const deterioration_score_table = {
   lymphocytes: {
     type: "number",
     step: 0.001,
-    name: "Lymphocytes",
+    name: "Lymphocytes (× 10⁹/L)",
     morbidity: {
       spline: {
         a: 0,
