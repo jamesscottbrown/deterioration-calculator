@@ -29,7 +29,7 @@ const scoreToY = (i) => {
   return row * subplotHeight + (row - 1) * padding + subplotHeight / 4;
 };
 
-const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
+const round = (num) => Math.round((num + Number.EPSILON) * 1) / 1;
 
 const XAxis = ({ x, ticks }) => {
   if (!ticks) {

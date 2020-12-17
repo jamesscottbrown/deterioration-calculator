@@ -120,7 +120,7 @@ const Risk = ({ score, maxBarHeight, marginLeft }) => {
     mortality.map((d, i) => [x(i), y(d)])
   );
 
-  const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
+  const round = (num) => Math.round((num + Number.EPSILON) * 1) / 1;
 
   return (
     <g>

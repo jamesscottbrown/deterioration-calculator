@@ -11,7 +11,7 @@ import {
 } from "./data";
 import BothScoresPlot from "./BothScoresPlot";
 
-const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
+const round = (num) => Math.round((num + Number.EPSILON) * 1) / 1;
 
 const tableLookup = (table, v) => {
   let i = -1;
