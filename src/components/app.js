@@ -7,18 +7,39 @@ import {
   deterioration_score_table,
   scoreColors,
   mortality,
+  morbidityProbabilityTable,
 } from "./data";
 import BothScoresPlot from "./BothScoresPlot";
 
 const round = (num) => Math.round((num + Number.EPSILON) * 10) / 10;
 
-const Results = ({ score, morbidityScore }) => {
-  return score !== null ? (
+const tableLookup = (table, v) => {
+  let i = -1;
+  while (i < table.length - 1) {
+    if (v >= table[i + 1][0]) {
+      i += 1;
+    } else {
+      break;
+    }
+  }
+
+  if (i === -1) {
+    return 0;
+  }
+  return table[i][1];
+};
+
+const Results = ({
+  mortalityScore,
+  totalMorbidityPoints,
+  deteriorationProbability,
+}) => {
+  return mortalityScore !== null ? (
     <>
       <div
         class="centered"
         style={{
-          border: `solid 4px ${scoreColors[score]}`,
+          border: `solid 4px ${scoreColors[mortalityScore]}`,
           "font-size": "1.5em",
           "margin-bottom": "15px",
         }}
@@ -29,7 +50,7 @@ const Results = ({ score, morbidityScore }) => {
             fontSize: "1.5em",
           }}
         >
-          <b> {score}</b>/21
+          <b> {mortalityScore}</b>/21
         </span>{" "}
         <br />
         Risk of death:
@@ -38,7 +59,17 @@ const Results = ({ score, morbidityScore }) => {
             fontSize: "1.5em",
           }}
         >
-          <b> {round(mortality[score])}%</b>
+          <b> {round(mortality[mortalityScore])}%</b>
+        </span>{" "}
+        <br />
+        <br />
+        Morbidity score:
+        <span
+          style={{
+            fontSize: "1.5em",
+          }}
+        >
+          <b> {totalMorbidityPoints}</b>
         </span>{" "}
         <br />
         Risk of deterioration:
@@ -47,12 +78,15 @@ const Results = ({ score, morbidityScore }) => {
             fontSize: "1.5em",
           }}
         >
-          <b> {round(100 * morbidityScore)}%</b>
+          <b> {round(100 * deteriorationProbability)}%</b>
         </span>{" "}
         <br />
       </div>
 
-      <BothScoresPlot mortalityScore={score} morbidityScore={morbidityScore} />
+      <BothScoresPlot
+        mortalityScore={mortalityScore}
+        morbidityScore={deteriorationProbability}
+      />
     </>
   ) : (
     <p>
@@ -136,7 +170,13 @@ const WhatYouShouldDo = () => (
   </div>
 );
 
-const NumberMeasurement = ({ short_name, f, selection, handleSelection }) => {
+const NumberMeasurement = ({
+  short_name,
+  f,
+  selection,
+  handleSelection,
+  state,
+}) => {
   const details = (help) =>
     help && (
       <details>
@@ -148,36 +188,33 @@ const NumberMeasurement = ({ short_name, f, selection, handleSelection }) => {
   const name = f.name;
   const help = f.help;
 
-  const spline = f.morbidity.spline;
   const sum = (x) => x.reduce((a, b) => a + b, 0);
 
-  const morbidityScore = (v) =>
-    spline.a +
-    spline.b * v +
-    sum(spline.points.map((p) => p[0] * Math.max(v - p[1], 0) ** 3));
+  const morbidityScore = (v) => {
+    if (f.morbidity === null) {
+      return 0;
+    }
+
+    if (f.morbidity.spline) {
+      const spline = f.morbidity.spline;
+
+      return (
+        spline.a +
+        spline.b * v +
+        sum(spline.points.map((p) => p[0] * Math.max(v - p[1], 0) ** 3))
+      );
+    } else if (f.morbidity.thresholds) {
+      return tableLookup(f.morbidity.thresholds, v);
+    }
+  };
 
   const mortalityScore = (v) => {
     if (f.mortality === null) {
       return 0;
     }
 
-    let i = -1;
-    while (i < f.mortality.thresholds.length - 1) {
-      if (v >= f.mortality.thresholds[i + 1][0]) {
-        i += 1;
-      } else {
-        break;
-      }
-    }
-
-    if (i == -1) {
-      return 0;
-    }
-    console.log(v, f.mortality.thresholds[i][1]);
-    return f.mortality.thresholds[i][1];
+    return tableLookup(f.mortality.thresholds, v);
   };
-
-  // TODO: corectly handle mortality score contribution
 
   return (
     <>
@@ -199,11 +236,25 @@ const NumberMeasurement = ({ short_name, f, selection, handleSelection }) => {
           )
         }
       />
+
+      {typeof state.selection[short_name] !== "undefined" && (
+        <p>
+          Morbidity score <b>+{state.morbidityScoreContribution[short_name]}</b>
+          ; Mortality score{" "}
+          <b>+{state.mortalityScoreContribution[short_name]}</b>
+        </p>
+      )}
     </>
   );
 };
 
-const DiscreteMeasurement = ({ short_name, f, selection, handleSelection }) => {
+const DiscreteMeasurement = ({
+  short_name,
+  f,
+  selection,
+  handleSelection,
+  state,
+}) => {
   const [usingAltUnits, setUsingAltUnits] = useState(false);
 
   const details = (help) =>
@@ -266,6 +317,14 @@ const DiscreteMeasurement = ({ short_name, f, selection, handleSelection }) => {
       </div>
 
       <SwitchButton />
+
+      {typeof state.selection[short_name] !== "undefined" && (
+        <p>
+          Morbidity score <b>+{state.morbidityScoreContribution[short_name]}</b>
+          ; Mortality score{" "}
+          <b>+{state.mortalityScoreContribution[short_name]}</b>
+        </p>
+      )}
     </>
   );
 };
@@ -281,13 +340,14 @@ export default class App extends Component {
     const short_names = Object.keys(deterioration_score_table);
     const scores_array = short_names.map((f) => deterioration_score_table[f]);
 
-    let morbidityScore = 0,
+    let totalMorbidityPoints = 0,
+      deteriorationProbability = 0,
       mortalityScore = 0;
 
     console.log(Object.keys(state.selection).length, scores_array.length);
 
     if (Object.keys(state.selection).length < scores_array.length) {
-      morbidityScore = null;
+      deteriorationProbability = null;
       mortalityScore = null;
       console.log("Score not set");
     } else {
@@ -296,15 +356,18 @@ export default class App extends Component {
         0
       );
 
-      const total = Object.values(state.morbidityScoreContribution).reduce(
-        (a, b) => a + b,
-        0
+      totalMorbidityPoints = Object.values(
+        state.morbidityScoreContribution
+      ).reduce((a, b) => a + b, 0);
+
+      //morbidityScore = 1 / (1 + Math.exp(-total));
+
+      deteriorationProbability = tableLookup(
+        morbidityProbabilityTable,
+        totalMorbidityPoints
       );
-      morbidityScore = 1 / (1 + Math.exp(-total));
 
       console.log(JSON.stringify(state));
-      console.log("Mortality:", mortalityScore);
-      console.log("Morbidity:", morbidityScore);
     }
 
     return (
@@ -333,11 +396,9 @@ export default class App extends Component {
               mortalityScoreContribution
             ) => {
               console.log(
-                short_name,
-                newValue,
-                morbidityScoreContribution,
-                mortalityScoreContribution
+                `Measurement ${short_name}=${newValue} contributes ${morbidityScoreContribution} to deterioration score and ${mortalityScoreContribution} to mortality score`
               );
+
               setState({
                 selection: { ...state.selection, [short_name]: newValue },
                 morbidityScoreContribution: {
@@ -359,6 +420,7 @@ export default class App extends Component {
                     short_name={short_name}
                     selection={state.selection}
                     handleSelection={handleSelection}
+                    state={state}
                   />
                 ) : (
                   <NumberMeasurement
@@ -366,6 +428,7 @@ export default class App extends Component {
                     short_name={short_name}
                     selection={state.selection}
                     handleSelection={handleSelection}
+                    state={state}
                   />
                 )}
               </div>
@@ -373,7 +436,11 @@ export default class App extends Component {
           })}
         </div>
 
-        <Results score={mortalityScore} morbidityScore={morbidityScore} />
+        <Results
+          mortalityScore={mortalityScore}
+          totalMorbidityPoints={totalMorbidityPoints}
+          deteriorationProbability={deteriorationProbability}
+        />
         <br />
         {/* <WhatYouShouldDo /> */}
       </div>
