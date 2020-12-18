@@ -2,9 +2,9 @@ import { scaleLinear } from "d3-scale";
 import { line, curveCatmullRom } from "d3-shape";
 import { mean } from "d3-array";
 
-import { bothScoresData } from "./BothScoresData";
+import { bothScoresData } from "../data/BothScoresData";
 
-import { allScores, mortality } from "./data";
+import { allScores, mortality } from "../data/data";
 
 const subplotHeight = 20;
 const padding = 5;

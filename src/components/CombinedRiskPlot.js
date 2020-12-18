@@ -1,4 +1,4 @@
-import { categories, counts, mortality, allScores } from "./data";
+import { categories, counts, mortality, allScores } from "../data/data";
 import { scaleLinear } from "d3-scale";
 import { line, curveCatmullRom } from "d3-shape";
 
