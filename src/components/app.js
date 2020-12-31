@@ -62,6 +62,28 @@ const WhatYouShouldDo = () => (
   </div>
 );
 
+const ScoreContribution = ({ state, short_name }) => {
+  return (
+    <>
+      <p style={{ textAlign: "right" }}>
+        {deterioration_score_table[short_name].morbidity === null
+          ? "n/a"
+          : typeof state.selection[short_name] !== "undefined" && (
+              <b>+{state.morbidityScoreContribution[short_name]}</b>
+            )}
+      </p>
+
+      <p style={{ textAlign: "right" }}>
+        {deterioration_score_table[short_name].mortality === null
+          ? "n/a"
+          : typeof state.selection[short_name] !== "undefined" && (
+              <b>+{state.mortalityScoreContribution[short_name]}</b>
+            )}
+      </p>
+    </>
+  );
+};
+
 const NumberMeasurement = ({
   short_name,
   f,
@@ -110,32 +132,28 @@ const NumberMeasurement = ({
 
   return (
     <>
-      <label for={short_name}>
-        {name}:{details(help)}
-      </label>
+      <div>
+        <label for={short_name}>
+          {name}:{details(help)}
+        </label>
 
-      <input
-        class="form-control"
-        type="number"
-        step={f.step}
-        id={short_name}
-        style={{ "padding-bottom": "10px" }}
-        onchange={(ev) =>
-          handleSelection(
-            +ev.target.value,
-            morbidityScore(+ev.target.value),
-            mortalityScore(+ev.target.value)
-          )
-        }
-      />
+        <input
+          class="form-control"
+          type="number"
+          step={f.step}
+          id={short_name}
+          style={{ "padding-bottom": "10px" }}
+          onchange={(ev) =>
+            handleSelection(
+              +ev.target.value,
+              morbidityScore(+ev.target.value),
+              mortalityScore(+ev.target.value)
+            )
+          }
+        />
+      </div>
 
-      {typeof state.selection[short_name] !== "undefined" && (
-        <p>
-          Morbidity score <b>+{state.morbidityScoreContribution[short_name]}</b>
-          ; Mortality score{" "}
-          <b>+{state.mortalityScoreContribution[short_name]}</b>
-        </p>
-      )}
+      <ScoreContribution state={state} short_name={short_name} />
     </>
   );
 };
@@ -183,40 +201,36 @@ const DiscreteMeasurement = ({
 
   return (
     <>
-      <label for={short_name}>
-        {name}:{details(help)}
-      </label>
+      <div style={{}}>
+        <label for={short_name}>
+          {name}:{details(help)}
+        </label>
 
-      <div id={short_name} role="group" class="btn-group">
-        {values.map((value) => (
-          <button
-            class={
-              selection[short_name] === value
-                ? "btn btn-secondary"
-                : "btn btn-outline-secondary"
-            }
-            onclick={() =>
-              handleSelection(
-                value,
-                morbidityScores ? morbidityScores[value] : 0,
-                mortalityScores ? mortalityScores[value] : 0
-              )
-            }
-          >
-            {value}
-          </button>
-        ))}
+        <div id={short_name} role="group" class="btn-group">
+          {values.map((value) => (
+            <button
+              class={
+                selection[short_name] === value
+                  ? "btn btn-secondary"
+                  : "btn btn-outline-secondary"
+              }
+              onclick={() =>
+                handleSelection(
+                  value,
+                  morbidityScores ? morbidityScores[value] : 0,
+                  mortalityScores ? mortalityScores[value] : 0
+                )
+              }
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+
+        <SwitchButton />
       </div>
 
-      <SwitchButton />
-
-      {typeof state.selection[short_name] !== "undefined" && (
-        <p>
-          Morbidity score <b>+{state.morbidityScoreContribution[short_name]}</b>
-          ; Mortality score{" "}
-          <b>+{state.mortalityScoreContribution[short_name]}</b>
-        </p>
-      )}
+      <ScoreContribution state={state} short_name={short_name} />
     </>
   );
 };
@@ -275,12 +289,22 @@ export default class App extends Component {
 
         <Explanation />
 
+        <br />
+
         <div
           style={{
             "max-width": "max-content",
             margin: "auto auto 2em 0",
+            display: "grid",
+            gridTemplateColumns: "auto 86px 65px",
+            gridColumnGap: "1em",
+            gridRowGap: "15px",
           }}
         >
+          <div />
+          <b style={{ borderBottom: "solid gray 1px" }}>Deterioration score</b>
+          <b style={{ borderBottom: "solid gray 1px" }}>Mortality score</b>
+
           {scores_array.map((f, i) => {
             const short_name = short_names[i];
 
@@ -307,7 +331,7 @@ export default class App extends Component {
             };
 
             return (
-              <div class="measurement">
+              <>
                 {f.type === "boolean" ? (
                   <DiscreteMeasurement
                     f={f}
@@ -325,7 +349,7 @@ export default class App extends Component {
                     state={state}
                   />
                 )}
-              </div>
+              </>
             );
           })}
         </div>

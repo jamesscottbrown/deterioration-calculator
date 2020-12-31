@@ -60,6 +60,7 @@ const deterioration_score_table = {
         Yes: 47,
       },
     },
+    mortality: null,
     name: "Radiographic chest infiltrates",
   },
 
@@ -72,6 +73,7 @@ const deterioration_score_table = {
         Yes: 108,
       },
     },
+    mortality: null,
     name: "Receiving oxygen",
   },
 
