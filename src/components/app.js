@@ -4,12 +4,17 @@ import { useState } from "preact/hooks";
 import {
   deterioration_score_table,
   morbidityProbabilityTable,
+  initialState,
 } from "../data/data";
 import { Results } from "./Results";
 import { Explanation } from "./Explanation";
 import { Intro } from "./Intro";
 
 const tableLookup = (table, v) => {
+  if (isNaN(v)) {
+    return NaN;
+  }
+
   let i = -1;
   while (i < table.length - 1) {
     if (v >= table[i + 1][0]) {
@@ -66,19 +71,29 @@ const ScoreContribution = ({ state, short_name }) => {
   return (
     <>
       <p style={{ textAlign: "right" }}>
-        {deterioration_score_table[short_name].morbidity === null
-          ? "n/a"
-          : typeof state.selection[short_name] !== "undefined" && (
-              <b>+{state.morbidityScoreContribution[short_name]}</b>
-            )}
+        {deterioration_score_table[short_name].morbidity === null ? (
+          "n/a"
+        ) : typeof state.selection[short_name] !== "undefined" &&
+          isNaN(state.morbidityScoreContribution[short_name]) ? (
+          <b style={{ color: "red" }}>Invalid</b>
+        ) : (
+          typeof state.selection[short_name] !== "undefined" && (
+            <b>+{state.morbidityScoreContribution[short_name]}</b>
+          )
+        )}
       </p>
 
       <p style={{ textAlign: "right" }}>
-        {deterioration_score_table[short_name].mortality === null
-          ? "n/a"
-          : typeof state.selection[short_name] !== "undefined" && (
-              <b>+{state.mortalityScoreContribution[short_name]}</b>
-            )}
+        {deterioration_score_table[short_name].mortality === null ? (
+          "n/a"
+        ) : typeof state.selection[short_name] !== "undefined" &&
+          isNaN(state.mortalityScoreContribution[short_name]) ? (
+          <b style={{ color: "red" }}>Invalid</b>
+        ) : (
+          typeof state.selection[short_name] !== "undefined" && (
+            <b>+{state.mortalityScoreContribution[short_name]}</b>
+          )
+        )}
       </p>
     </>
   );
@@ -130,6 +145,22 @@ const NumberMeasurement = ({
     return tableLookup(f.mortality.thresholds, v);
   };
 
+  const max_observed_value = f.morbidity.thresholds.slice(-1)[0][0];
+  const min_observed_value = f.morbidity.thresholds[0][0];
+
+  const updateScore = (value) => {
+    let filteredValue = value;
+    if (value < +min_observed_value || value > +max_observed_value) {
+      filteredValue = NaN;
+    }
+
+    handleSelection(
+      value,
+      morbidityScore(filteredValue),
+      mortalityScore(filteredValue)
+    );
+  };
+
   return (
     <>
       <div>
@@ -143,14 +174,22 @@ const NumberMeasurement = ({
           step={f.step}
           id={short_name}
           style={{ "padding-bottom": "10px" }}
-          onchange={(ev) =>
-            handleSelection(
-              +ev.target.value,
-              morbidityScore(+ev.target.value),
-              mortalityScore(+ev.target.value)
-            )
-          }
+          onchange={(ev) => updateScore(ev.target.value)}
         />
+
+        {f.morbidity.thresholds &&
+          state.selection[short_name] < min_observed_value && (
+            <p style={{ color: "red" }}>
+              Value is too low (minimum observed is {min_observed_value})
+            </p>
+          )}
+
+        {f.morbidity.thresholds &&
+          state.selection[short_name] > max_observed_value && (
+            <p style={{ color: "red" }}>
+              Value is too high (maximum observed is {max_observed_value})
+            </p>
+          )}
       </div>
 
       <ScoreContribution state={state} short_name={short_name} />
@@ -237,11 +276,9 @@ const DiscreteMeasurement = ({
 
 export default class App extends Component {
   render() {
-    const [state, setState] = useState({
-      selection: {},
-      morbidityScoreContribution: {},
-      mortalityScoreContribution: {},
-    });
+    // TODO: prepopulate with NaN
+
+    const [state, setState] = useState(initialState);
 
     const short_names = Object.keys(deterioration_score_table);
     const scores_array = short_names.map((f) => deterioration_score_table[f]);
@@ -252,29 +289,23 @@ export default class App extends Component {
 
     console.log(Object.keys(state.selection).length, scores_array.length);
 
-    if (Object.keys(state.selection).length < scores_array.length) {
-      deteriorationProbability = null;
-      mortalityScore = null;
-      console.log("Score not set");
-    } else {
-      mortalityScore = Object.values(state.mortalityScoreContribution).reduce(
-        (a, b) => a + b,
-        0
-      );
+    mortalityScore = Object.values(state.mortalityScoreContribution).reduce(
+      (a, b) => a + b,
+      0
+    );
 
-      totalMorbidityPoints = Object.values(
-        state.morbidityScoreContribution
-      ).reduce((a, b) => a + b, 0);
+    totalMorbidityPoints = Object.values(
+      state.morbidityScoreContribution
+    ).reduce((a, b) => a + b, 0);
 
-      //morbidityScore = 1 / (1 + Math.exp(-total));
+    //morbidityScore = 1 / (1 + Math.exp(-total));
 
-      deteriorationProbability = tableLookup(
-        morbidityProbabilityTable,
-        totalMorbidityPoints
-      );
+    deteriorationProbability = tableLookup(
+      morbidityProbabilityTable,
+      totalMorbidityPoints
+    );
 
-      console.log(JSON.stringify(state));
-    }
+    console.log(JSON.stringify(state));
 
     return (
       <div id="app">

@@ -1,3 +1,30 @@
+const initialState = {
+  mortalityScoreContribution: {
+    sex: NaN,
+    comorbidities: NaN,
+    gcs: NaN,
+    age: NaN,
+    respiratory_rate: NaN,
+    oxygen_saturation: NaN,
+    urea: NaN,
+    crp: NaN,
+  },
+  morbidityScoreContribution: {
+    nosocomial: NaN,
+    sex: NaN,
+    infiltrates: NaN,
+    oxygen: NaN,
+    gcs: NaN,
+    age: NaN,
+    respiratory_rate: NaN,
+    oxygen_saturation: NaN,
+    urea: NaN,
+    crp: NaN,
+    lymphocytes: NaN,
+  },
+  selection: {},
+};
+
 const deterioration_score_table = {
   nosocomial: {
     type: "boolean",
@@ -2603,4 +2630,5 @@ export {
   scoreColors,
   deterioration_score_table,
   morbidityProbabilityTable,
+  initialState,
 };
