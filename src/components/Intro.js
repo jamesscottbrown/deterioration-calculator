@@ -13,6 +13,11 @@ export const Intro = () => (
       at hospital presentation.
     </p>
     <p>
+      Predictors should be measured at the point of hospital presentation for
+      suspected community-acquired cases, or first evaluation for COVID-19 for
+      suspected nosocomial cases.
+    </p>
+    <p>
       They are based on a large UK cohort of patients, and should not be adopted
       for routine clinical use in other settings until they have been
       appropriately validated for these settings.

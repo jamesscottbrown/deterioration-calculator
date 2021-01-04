@@ -101,7 +101,7 @@ const deterioration_score_table = {
       },
     },
     mortality: null,
-    name: "Receiving oxygen",
+    name: "Receiving oxygen (when oxygen saturation measured)",
   },
 
   gcs: {
