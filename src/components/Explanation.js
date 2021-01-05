@@ -63,11 +63,8 @@ export const Explanation = ({ short_names }) => (
       <p>
         The full 4C Deterioration logistic regression equation presented in the
         deterioration model{" "}
-        <a href="https://www.medrxiv.org/content/10.1101/2020.10.09.20209957v1">
-          preprint
-        </a>{" "}
-        was transformed to a points-based score to enable simple manual
-        calculation.
+        <a href="https://doi.org/10.1016/S2213-2600(20)30559-2">paper</a> was
+        transformed to a points-based score to enable simple manual calculation.
       </p>
       <p>
         A points score is allocated for each predictor; scores are then summed
