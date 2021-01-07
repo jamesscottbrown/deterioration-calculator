@@ -2611,7 +2611,7 @@ const mortality = [
   87.5,
 ];
 
-const allScores = Array.apply(null, Array(21 + 1)).map((_, i) => i);
+const allScores = Array.from(Array(21).keys());
 
 let scoreColors = [];
 for (let j in categories) {
