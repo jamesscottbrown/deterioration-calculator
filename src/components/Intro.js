@@ -35,8 +35,11 @@ export const Intro = () => (
       For full details, see
       <a href="https://doi.org/10.1136/bmj.m3339"> the paper</a> introducing the
       4C Mortality Score, and the{" "}
-      <a href="https://doi.org/10.1016/S2213-2600(20)30559-2">paper</a>{" "}
-      introducing the 4C Deterioration model.
+      <a href="https://doi.org/10.1016/S2213-2600(20)30559-2">paper</a> (
+      <a href="https://www.medrxiv.org/content/10.1101/2020.10.09.20209957v1">
+        preprint
+      </a>
+      ) introducing the 4C Deterioration model.
     </p>
     <p>
       This is an infographic that visualises risk, based on observed mortality
