@@ -228,8 +228,8 @@ const App = () => {
 
       <div
         style={{
-          "max-width": "max-content", // this is here as a fallback for browsers without support for max()
-          width: "min(max-content, width)",
+          width: "100%",
+          "max-width": "fit-content",
           margin: "auto auto 2em 0",
           display: "grid",
           gridTemplateColumns: "auto 86px 65px",

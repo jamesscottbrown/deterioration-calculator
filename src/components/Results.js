@@ -40,6 +40,8 @@ export const Results = ({
             : `solid 2px grey`,
           "font-size": "1.5em",
           "margin-bottom": "15px",
+          width: "100%",
+          "max-width": "fit-content",
         }}
       >
         {showMortality && (
