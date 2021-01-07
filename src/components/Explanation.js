@@ -2,7 +2,7 @@ import { mortality } from "../data/data";
 
 const round = (num) => Math.round((num + Number.EPSILON) * 1) / 1;
 
-export const Explanation = ({ short_names }) => (
+export const Explanation = () => (
   <>
     <details style={{ border: "1px solid lightgrey", "border-radius": "5px" }}>
       <summary>How the Mortality calculation is done</summary>
@@ -48,7 +48,7 @@ export const Explanation = ({ short_names }) => (
         </thead>
 
         {mortality.slice(1).map((val, i) => (
-          <tr style={{ background: i % 2 == 0 ? "white" : "#ebebeb" }}>
+          <tr style={{ background: i % 2 === 0 ? "white" : "#ebebeb" }}>
             <td>{i + 1}</td>
             <td>{round(val)}</td>
           </tr>

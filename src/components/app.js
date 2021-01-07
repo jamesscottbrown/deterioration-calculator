@@ -1,4 +1,3 @@
-import { Component } from "preact";
 import { useState } from "preact/hooks";
 
 import {
@@ -50,13 +49,7 @@ const ScoreContribution = ({ state, short_name }) => {
   );
 };
 
-const NumberMeasurement = ({
-  short_name,
-  f,
-  selection,
-  handleSelection,
-  state,
-}) => {
+const NumberMeasurement = ({ short_name, f, handleSelection, state }) => {
   const details = (help) =>
     help && (
       <details>
@@ -192,117 +185,117 @@ const DiscreteMeasurement = ({
   );
 };
 
-export default class App extends Component {
-  render() {
-    const [state, setState] = useState(initialState);
+const App = () => {
+  const [state, setState] = useState(initialState);
 
-    const short_names = Object.keys(deterioration_score_table);
-    const scores_array = short_names.map((f) => deterioration_score_table[f]);
+  const short_names = Object.keys(deterioration_score_table);
+  const scores_array = short_names.map((f) => deterioration_score_table[f]);
 
-    let totalMorbidityPoints = 0,
-      deteriorationProbability = 0,
-      mortalityScore = 0;
+  let totalMorbidityPoints = 0,
+    deteriorationProbability = 0,
+    mortalityScore = 0;
 
-    console.log(Object.keys(state.selection).length, scores_array.length);
+  console.log(Object.keys(state.selection).length, scores_array.length);
 
-    mortalityScore = Object.values(state.mortalityScoreContribution).reduce(
-      (a, b) => a + b,
-      0
-    );
+  mortalityScore = Object.values(state.mortalityScoreContribution).reduce(
+    (a, b) => a + b,
+    0
+  );
 
-    totalMorbidityPoints = Object.values(
-      state.morbidityScoreContribution
-    ).reduce((a, b) => a + b, 0);
+  totalMorbidityPoints = Object.values(state.morbidityScoreContribution).reduce(
+    (a, b) => a + b,
+    0
+  );
 
-    deteriorationProbability = tableLookup(
-      morbidityProbabilityTable,
-      totalMorbidityPoints
-    );
+  deteriorationProbability = tableLookup(
+    morbidityProbabilityTable,
+    totalMorbidityPoints
+  );
 
-    console.log(JSON.stringify(state));
+  console.log(JSON.stringify(state));
 
-    return (
-      <div id="app">
-        <base target="_parent" />
+  return (
+    <div id="app">
+      <base target="_parent" />
 
-        <h1>4C Mortality & 4C Deterioration</h1>
+      <h1>4C Mortality & 4C Deterioration</h1>
 
-        <Intro />
+      <Intro />
 
-        <Explanation />
+      <Explanation />
 
-        <br />
+      <br />
 
-        <div
-          style={{
-            "max-width": "max-content",
-            margin: "auto auto 2em 0",
-            display: "grid",
-            gridTemplateColumns: "auto 86px 65px",
-            gridColumnGap: "1em",
-            gridRowGap: "15px",
-          }}
-        >
-          <div />
-          <b style={{ borderBottom: "solid gray 1px" }}>Deterioration score</b>
-          <b style={{ borderBottom: "solid gray 1px" }}>Mortality score</b>
+      <div
+        style={{
+          "max-width": "max-content",
+          margin: "auto auto 2em 0",
+          display: "grid",
+          gridTemplateColumns: "auto 86px 65px",
+          gridColumnGap: "1em",
+          gridRowGap: "15px",
+        }}
+      >
+        <div />
+        <b style={{ borderBottom: "solid gray 1px" }}>Deterioration score</b>
+        <b style={{ borderBottom: "solid gray 1px" }}>Mortality score</b>
 
-          {scores_array.map((f, i) => {
-            const short_name = short_names[i];
+        {scores_array.map((f, i) => {
+          const short_name = short_names[i];
 
-            const handleSelection = (
-              newValue,
-              morbidityScoreContribution,
-              mortalityScoreContribution
-            ) => {
-              console.log(
-                `Measurement ${short_name}=${newValue} contributes ${morbidityScoreContribution} to deterioration score and ${mortalityScoreContribution} to mortality score`
-              );
-
-              setState({
-                selection: { ...state.selection, [short_name]: newValue },
-                morbidityScoreContribution: {
-                  ...state.morbidityScoreContribution,
-                  [short_name]: morbidityScoreContribution,
-                },
-                mortalityScoreContribution: {
-                  ...state.mortalityScoreContribution,
-                  [short_name]: mortalityScoreContribution,
-                },
-              });
-            };
-
-            return (
-              <>
-                {f.type === "boolean" ? (
-                  <DiscreteMeasurement
-                    f={f}
-                    short_name={short_name}
-                    selection={state.selection}
-                    handleSelection={handleSelection}
-                    state={state}
-                  />
-                ) : (
-                  <NumberMeasurement
-                    f={f}
-                    short_name={short_name}
-                    selection={state.selection}
-                    handleSelection={handleSelection}
-                    state={state}
-                  />
-                )}
-              </>
+          const handleSelection = (
+            newValue,
+            morbidityScoreContribution,
+            mortalityScoreContribution
+          ) => {
+            console.log(
+              `Measurement ${short_name}=${newValue} contributes ${morbidityScoreContribution} to deterioration score and ${mortalityScoreContribution} to mortality score`
             );
-          })}
-        </div>
 
-        <Results
-          mortalityScore={mortalityScore}
-          totalMorbidityPoints={totalMorbidityPoints}
-          deteriorationProbability={deteriorationProbability}
-        />
-        <br />
+            setState({
+              selection: { ...state.selection, [short_name]: newValue },
+              morbidityScoreContribution: {
+                ...state.morbidityScoreContribution,
+                [short_name]: morbidityScoreContribution,
+              },
+              mortalityScoreContribution: {
+                ...state.mortalityScoreContribution,
+                [short_name]: mortalityScoreContribution,
+              },
+            });
+          };
+
+          return (
+            <>
+              {f.type === "boolean" ? (
+                <DiscreteMeasurement
+                  f={f}
+                  short_name={short_name}
+                  selection={state.selection}
+                  handleSelection={handleSelection}
+                  state={state}
+                />
+              ) : (
+                <NumberMeasurement
+                  f={f}
+                  short_name={short_name}
+                  handleSelection={handleSelection}
+                  state={state}
+                />
+              )}
+            </>
+          );
+        })}
       </div>
-    );
-  }
-}
+
+      <Results
+        mortalityScore={mortalityScore}
+        totalMorbidityPoints={totalMorbidityPoints}
+        deteriorationProbability={deteriorationProbability}
+      />
+      <br />
+    </div>
+  );
+};
+
+export default App;

@@ -349,15 +349,11 @@ const BarChartSubPlot = ({ data, mortalityScore }) => {
 const DensitySubPlot = ({ i, data, mortalityScore, morbidityScore, x }) => {
   const y = scaleLinear().domain([0, 0.17]).range([subplotHeight, 0]);
 
-  var kde = kernelDensityEstimator(epanechnikov(2), x.ticks(60));
-  var density = kde(
-    data.map(function (d) {
-      return d["ISARIC_4C_Deterioration"];
-    })
-  );
+  let kde = kernelDensityEstimator(epanechnikov(2), x.ticks(60));
+  let density = kde(data.map((d) => d["ISARIC_4C_Deterioration"]));
 
   const l = line().curve(curveCatmullRom.alpha(0.5))(
-    density.map((d, i) => [x(d[0]), y(d[1])])
+    density.map((d) => [x(d[0]), y(d[1])])
   );
 
   return (
@@ -408,21 +404,8 @@ const DensitySubPlot = ({ i, data, mortalityScore, morbidityScore, x }) => {
   );
 };
 
-function kde(kernel, thresholds, data) {
-  return thresholds.map((t) => [t, mean(data, (d) => kernel(t - d))]);
-}
-
 function kernelDensityEstimator(kernel, X) {
-  return function (V) {
-    return X.map(function (x) {
-      return [
-        x,
-        mean(V, function (v) {
-          return kernel(x - v);
-        }),
-      ];
-    });
-  };
+  return (V) => X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
 }
 
 function epanechnikov(bandwidth) {

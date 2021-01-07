@@ -65,8 +65,8 @@ const deterioration_score_table = {
     morbidity: null,
     mortality: {
       scores: {
-        "0": 0,
-        "1": 1,
+        0: 0,
+        1: 1,
         "⩾2": 2,
       },
     },
@@ -110,13 +110,13 @@ const deterioration_score_table = {
     morbidity: {
       scores: {
         "<15": 87,
-        "15": 0,
+        15: 0,
       },
     },
     mortality: {
       scores: {
         "<15": 2,
-        "15": 0,
+        15: 0,
       },
     },
     name: "Glasgow Coma Scale",
@@ -2487,8 +2487,8 @@ const score_table = {
   },
   comorbidities: {
     scores: {
-      "0": 0,
-      "1": 1,
+      0: 0,
+      1: 1,
       "⩾2": 2,
     },
     name: "Number of comorbidities",
@@ -2516,7 +2516,7 @@ const score_table = {
   gcs: {
     scores: {
       "<15": 2,
-      "15": 0,
+      15: 0,
     },
     order: ["<15", "15"],
     name: "Glasgow Coma Scale",
