@@ -2,10 +2,17 @@ import { mortality } from "../data/data";
 
 const round = (num) => Math.round((num + Number.EPSILON) * 1) / 1;
 
-export const Explanation = () => (
-  <>
-    <details style={{ border: "1px solid lightgrey", "border-radius": "5px" }}>
-      <summary>How the Mortality calculation is done</summary>
+export const MortalityExplanation = ({ setView }) => {
+  return (
+    <>
+      <button
+        onClick={() => setView("main")}
+        style={{ float: "right" }}
+        class="button-link"
+      >
+        Back to calculator
+      </button>{" "}
+      <h1>4C Mortality calculation</h1>
       <p>
         The calculation is simple, and can be done without even requiring a
         calculator.
@@ -20,13 +27,11 @@ export const Explanation = () => (
         ). The contributions to the total score are listed on each button in the
         form below.
       </p>
-
       <p>
         The observed in-hospital mortality for patients with this score in the
         validation cohort is then given by a lookup table (see Figure 2 of{" "}
         <a href="https://doi.org/10.1136/bmj.m3339"> the paper</a>):
       </p>
-
       <table
         style={{
           "padding-bottom": "10px",
@@ -54,12 +59,21 @@ export const Explanation = () => (
           </tr>
         ))}
       </table>
-    </details>
+    </>
+  );
+};
 
-    <br />
-
-    <details style={{ border: "1px solid lightgrey", "border-radius": "5px" }}>
-      <summary>How the Deterioration calculation is done</summary>
+export const DeteriorationExplanation = ({ setView }) => {
+  return (
+    <>
+      <button
+        onClick={() => setView("main")}
+        style={{ float: "right" }}
+        class="button-link"
+      >
+        Back to calculator
+      </button>{" "}
+      <h1>4C Deterioration calculation</h1>
       <p>
         The full 4C Deterioration logistic regression equation presented in the
         deterioration model{" "}
@@ -83,6 +97,26 @@ export const Explanation = () => (
         </a>
         .
       </p>
-    </details>
+    </>
+  );
+};
+
+export const Explanation = ({ setView }) => (
+  <>
+    <button
+      onclick={() => setView("mortality-explanation")}
+      class="button-link"
+    >
+      Details of how the Mortality calculation is done
+    </button>
+
+    <br />
+    <button
+      onclick={() => setView("deterioration-explanation")}
+      class="button-link"
+    >
+      Details of how the Deterioration calculation is done
+    </button>
+    <br />
   </>
 );

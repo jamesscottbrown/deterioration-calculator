@@ -6,7 +6,11 @@ import {
   initialState,
 } from "../data/data";
 import { Results } from "./Results";
-import { Explanation } from "./Explanation";
+import {
+  Explanation,
+  DeteriorationExplanation,
+  MortalityExplanation,
+} from "./Explanation";
 import { Intro } from "./Intro";
 
 import {
@@ -187,6 +191,7 @@ const DiscreteMeasurement = ({
 
 const App = () => {
   const [state, setState] = useState(initialState);
+  const [view, setView] = useState("main");
 
   const short_names = Object.keys(deterioration_score_table);
   const scores_array = short_names.map((f) => deterioration_score_table[f]);
@@ -214,6 +219,20 @@ const App = () => {
 
   console.log(JSON.stringify(state));
 
+  if (view === "deterioration-explanation") {
+    return (
+      <div id="app">
+        <DeteriorationExplanation setView={setView} />
+      </div>
+    );
+  } else if (view === "mortality-explanation") {
+    return (
+      <div id="app">
+        <MortalityExplanation setView={setView} />
+      </div>
+    );
+  }
+
   return (
     <div id="app">
       <base target="_parent" />
@@ -222,7 +241,7 @@ const App = () => {
 
       <Intro />
 
-      <Explanation />
+      <Explanation setView={setView} />
 
       <br />
 
