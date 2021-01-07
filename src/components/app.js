@@ -227,9 +227,6 @@ export default class App extends Component {
 
         <h1>4C Mortality & 4C Deterioration</h1>
 
-        <h2 style={{ color: "red" }}>
-          This page should be considered a prototype that is under development.
-        </h2>
         <Intro />
 
         <Explanation />
