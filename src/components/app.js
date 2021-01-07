@@ -10,62 +10,13 @@ import { Results } from "./Results";
 import { Explanation } from "./Explanation";
 import { Intro } from "./Intro";
 
-const tableLookup = (table, v) => {
-  if (isNaN(v)) {
-    return NaN;
-  }
-
-  let i = -1;
-  while (i < table.length - 1) {
-    if (v >= table[i + 1][0]) {
-      i += 1;
-    } else {
-      break;
-    }
-  }
-
-  if (i === -1) {
-    return 0;
-  }
-  return table[i][1];
-};
-
-const WhatYouShouldDo = () => (
-  <div>
-    <h2>What you should do</h2>
-    <p>
-      It is important that <i>everyone</i> follows the Government's advice on{" "}
-      <a href="https://www.gov.uk/government/publications/staying-alert-and-safe-social-distancing">
-        Staying alert and safe (social distancing)
-      </a>
-      , and on{" "}
-      <a href="https://www.gov.uk/government/publications/covid-19-stay-at-home-guidance">
-        self-isolating
-      </a>{" "}
-      if they or someone in their household has symptoms of COVID-19. This is
-      important not only to protect yourself, but also to prevent you from
-      accidentally infecting more vulnerable people.
-    </p>
-
-    <p>
-      People who are defined as extremely vulnerable on medical grounds should
-      also follow the government's{" "}
-      <a href="https://www.gov.uk/government/publications/guidance-on-shielding-and-protecting-extremely-vulnerable-persons-from-covid-19">
-        advice on shielding
-      </a>
-      .
-    </p>
-
-    <p>
-      If you think that you might have COVID-19, you should stay at home and
-      consult the{" "}
-      <a href="https://www.nhs.uk/conditions/coronavirus-covid-19/check-if-you-have-coronavirus-symptoms/">
-        NHS Website
-      </a>{" "}
-      for advice.
-    </p>
-  </div>
-);
+import {
+  tableLookup,
+  morbidityScoreComponentNumeric,
+  mortalityScoreComponentNumeric,
+  morbidityScoreComponentDiscrete,
+  mortalityScoreComponentDiscrete,
+} from "./calculation";
 
 const ScoreContribution = ({ state, short_name }) => {
   return (
@@ -117,34 +68,6 @@ const NumberMeasurement = ({
   const name = f.name;
   const help = f.help;
 
-  const sum = (x) => x.reduce((a, b) => a + b, 0);
-
-  const morbidityScore = (v) => {
-    if (f.morbidity === null) {
-      return 0;
-    }
-
-    if (f.morbidity.spline) {
-      const spline = f.morbidity.spline;
-
-      return (
-        spline.a +
-        spline.b * v +
-        sum(spline.points.map((p) => p[0] * Math.max(v - p[1], 0) ** 3))
-      );
-    } else if (f.morbidity.thresholds) {
-      return tableLookup(f.morbidity.thresholds, v);
-    }
-  };
-
-  const mortalityScore = (v) => {
-    if (f.mortality === null) {
-      return 0;
-    }
-
-    return tableLookup(f.mortality.thresholds, v);
-  };
-
   const max_observed_value = f.morbidity.thresholds.slice(-1)[0][0];
   const min_observed_value = f.morbidity.thresholds[0][0];
 
@@ -156,8 +79,8 @@ const NumberMeasurement = ({
 
     handleSelection(
       value,
-      morbidityScore(filteredValue),
-      mortalityScore(filteredValue)
+      morbidityScoreComponentNumeric(f, filteredValue),
+      mortalityScoreComponentNumeric(f, filteredValue)
     );
   };
 
@@ -229,11 +152,6 @@ const DiscreteMeasurement = ({
     );
   };
 
-  const morbidityScores =
-    f.morbidity && (usingAltUnits ? f.morbidity.altScores : f.morbidity.scores);
-  const mortalityScores =
-    f.mortality && (usingAltUnits ? f.mortality.altScores : f.mortality.scores);
-
   const values = f.options;
   const name = usingAltUnits ? f.altName : f.name;
   const help = f.help;
@@ -256,8 +174,8 @@ const DiscreteMeasurement = ({
               onclick={() =>
                 handleSelection(
                   value,
-                  morbidityScores ? morbidityScores[value] : 0,
-                  mortalityScores ? mortalityScores[value] : 0
+                  morbidityScoreComponentDiscrete(f, usingAltUnits, value),
+                  mortalityScoreComponentDiscrete(f, usingAltUnits, value)
                 )
               }
             >
@@ -276,8 +194,6 @@ const DiscreteMeasurement = ({
 
 export default class App extends Component {
   render() {
-    // TODO: prepopulate with NaN
-
     const [state, setState] = useState(initialState);
 
     const short_names = Object.keys(deterioration_score_table);
@@ -297,8 +213,6 @@ export default class App extends Component {
     totalMorbidityPoints = Object.values(
       state.morbidityScoreContribution
     ).reduce((a, b) => a + b, 0);
-
-    //morbidityScore = 1 / (1 + Math.exp(-total));
 
     deteriorationProbability = tableLookup(
       morbidityProbabilityTable,
@@ -391,7 +305,6 @@ export default class App extends Component {
           deteriorationProbability={deteriorationProbability}
         />
         <br />
-        {/* <WhatYouShouldDo /> */}
       </div>
     );
   }
