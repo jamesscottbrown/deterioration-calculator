@@ -224,4 +224,16 @@ fieldset:disabled a.btn {
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
-/*# sourceMappingURL=ssr-bundle.540a1.css.map*/
+.button-link {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=ssr-bundle.d1e70.css.map*/
