@@ -86,7 +86,7 @@ const BothScoresPlot = ({ mortalityScore, morbidityScore }) => {
   const svgHeight = height + 40 + 40 + 25 + 30 + paddingTop;
 
   return (
-    <svg width="500" viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+    <svg width="100%" viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
       <g transform={`translate(${paddingLeft}, 0)`}>
         <Header />
       </g>
