@@ -669,7 +669,7 @@ const deterioration_score_table = {
     mortality: {
       thresholds: [
         [7, 1],
-        [14, 3],
+        [14 + Number.EPSILON, 3],
       ],
     },
   },
